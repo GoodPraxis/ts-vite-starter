@@ -1,0 +1,84 @@
+# This is an internal setup used by Good Praxis.
+# If this is not run on Good Praxis servers, you need to change it.
+
+stages:
+  - build
+  - review
+  - deploy
+
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+# This folder is cached between builds
+# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
+cache:
+  paths:
+    - .npm
+build:static:
+  stage: build
+  image: node:18
+  script:
+  - npm ci
+  - npx vite build
+  artifacts:
+    paths:
+      - dist/
+  only:
+  - merge_requests
+  - master
+  - tags
+
+review:
+  stage: review
+  script:
+    - rsync -av --delete --mkpath dist/client/ /srv/nginx/pages/$CI_PROJECT_PATH_SLUG-$CI_BUILD_REF_SLUG/public
+  dependencies:
+    - build:static
+  environment:
+    name: review/$CI_BUILD_REF_NAME
+    url: https://$CI_PROJECT_PATH_SLUG-$CI_BUILD_REF_SLUG.$APPS_DOMAIN
+    on_stop: stop_review
+  only:
+    - merge_requests
+  tags:
+    - nginx
+    - review-apps
+    - goodpraxis
+
+stop_review:
+  stage: review
+  cache: {}
+  script:
+    - rm -rf /srv/nginx/pages/$CI_PROJECT_PATH_SLUG-$CI_BUILD_REF_SLUG
+  variables:
+    GIT_STRATEGY: none
+  when: manual
+  environment:
+    name: review/$CI_BUILD_REF_NAME
+    action: stop
+  only:
+    - merge_requests
+  tags:
+    - nginx
+    - review-apps
+    - goodpraxis
+
+deploy:staging:
+  stage: deploy
+  cache: {}
+  script:
+    - rsync -av --delete --mkpath dist/client/ /srv/nginx/pages/$CI_PROJECT_PATH_SLUG-staging/public
+  dependencies:
+    - build:static
+  environment:
+    name: staging
+    url: https://$CI_PROJECT_PATH_SLUG-staging.$APPS_DOMAIN
+  only:
+    refs:
+      - master
+  except:
+   - schedules
+  tags:
+    - nginx
+    - review-apps
+    - goodpraxis

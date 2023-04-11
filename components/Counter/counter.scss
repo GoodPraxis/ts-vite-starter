@@ -1,0 +1,21 @@
+@import 'variables';
+
+.counter-button {
+  background-color: $off-white;
+  border: 2px solid $black;
+  border-radius: 20px;
+  color: $black;
+  font: inherit;
+  font-size: 14px;
+  line-height: 38px;
+  padding: 0 20px;
+  transition: background-color .2s ease-out;
+
+  &:hover {
+    background-color: $white;
+  }
+
+  &:active {
+    background-color: $off-white;
+  }
+}

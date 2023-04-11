@@ -1,27 +1,13 @@
-export type { PageContextServer }
-export type { PageContextClient }
-export type { PageContext }
-export type { PageProps }
-
 import type {
   PageContextBuiltIn,
-  /*
-  // When using Client Routing https://vite-plugin-ssr.com/clientRouting
-  PageContextBuiltInClientWithClientRouting as PageContextBuiltInClient
-  /*/
-  // When using Server Routing
-  PageContextBuiltInClientWithServerRouting as PageContextBuiltInClient
-  //*/
-} from 'vite-plugin-ssr/types'
-
-type Page = (pageProps: PageProps) => React.ReactElement
-type PageProps = {}
+  PageContextBuiltInClientWithClientRouting as PageContextBuiltInClient,
+} from 'vite-plugin-ssr/types';
 
 export type PageContextCustom = {
-  Page: Page
-  pageProps?: PageProps
-  urlPathname: string
-  exports: {
+  readonly Page: React.FC
+  readonly urlPathname: string
+  readonly pageProps: {},
+  readonly exports: {
     documentProps?: {
       title?: string
       description?: string
@@ -29,7 +15,11 @@ export type PageContextCustom = {
   }
 }
 
-type PageContextServer = PageContextBuiltIn<Page> & PageContextCustom
-type PageContextClient = PageContextBuiltInClient<Page> & PageContextCustom
+type PageContextServer = PageContextBuiltIn<React.FC> & PageContextCustom
+type PageContextClient = PageContextBuiltInClient<React.FC> & PageContextCustom
 
 type PageContext = PageContextClient | PageContextServer
+
+export type { PageContextServer };
+export type { PageContextClient };
+export type { PageContext };

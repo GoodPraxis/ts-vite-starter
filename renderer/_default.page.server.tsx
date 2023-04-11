@@ -1,28 +1,26 @@
-export { render }
-// See https://vite-plugin-ssr.com/data-fetching
-export const passToClient = ['pageProps', 'urlPathname']
+import ReactDOMServer from 'react-dom/server';
+import React from 'react';
+import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr/server';
+import PageShell from './PageShell';
+import logoUrl from './logo.svg';
+import { DEFAULT_TITLE, DEFAULT_DESCRIPTION, MAIN_CONTAINER_ID } from '../constants';
+import type { PageContextServer } from './types';
 
-import ReactDOMServer from 'react-dom/server'
-import React from 'react'
-import { PageShell } from './PageShell'
-import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr/server'
-import logoUrl from './logo.svg'
-import type { PageContextServer } from './types'
+export const passToClient = ['pageProps'];
 
 async function render(pageContext: PageContextServer) {
-  const { Page, pageProps } = pageContext
-  // This render() hook only supports SSR, see https://vite-plugin-ssr.com/render-modes for how to modify render() to support SPA
-  if (!Page) throw new Error('My render() hook expects pageContext.Page to be defined')
+  const { Page, pageProps, exports: { documentProps } } = pageContext;
+  if (!Page) {
+    throw new Error('render() hook expects pageContext.Page to be defined');
+  }
   const pageHtml = ReactDOMServer.renderToString(
     <PageShell pageContext={pageContext}>
       <Page {...pageProps} />
-    </PageShell>
-  )
+    </PageShell>,
+  );
 
-  // See https://vite-plugin-ssr.com/head
-  const { documentProps } = pageContext.exports
-  const title = (documentProps && documentProps.title) || 'Vite SSR app'
-  const desc = (documentProps && documentProps.description) || 'App using Vite + vite-plugin-ssr'
+  const title = documentProps?.title || DEFAULT_TITLE;
+  const desc = documentProps?.description || DEFAULT_DESCRIPTION;
 
   const documentHtml = escapeInject`<!DOCTYPE html>
     <html lang="en">
@@ -34,14 +32,13 @@ async function render(pageContext: PageContextServer) {
         <title>${title}</title>
       </head>
       <body>
-        <div id="page-view">${dangerouslySkipEscape(pageHtml)}</div>
+        <div id="${MAIN_CONTAINER_ID}">${dangerouslySkipEscape(pageHtml)}</div>
       </body>
-    </html>`
+    </html>`;
 
   return {
     documentHtml,
-    pageContext: {
-      // We can add some `pageContext` here, which is useful if we want to do page redirection https://vite-plugin-ssr.com/page-redirection
-    }
-  }
+  };
 }
+
+export { render };

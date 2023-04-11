@@ -1,22 +1,36 @@
-export { render }
+import React from 'react';
+import { hydrateRoot, createRoot, Root } from 'react-dom/client';
+import PageShell from './PageShell';
+import { DEFAULT_TITLE, MAIN_CONTAINER_ID } from '../constants';
+import type { PageContextClient } from './types';
 
-import React from 'react'
-import { hydrateRoot } from 'react-dom/client'
-import { PageShell } from './PageShell'
-import type { PageContextClient } from './types'
+export const clientRouting = true;
+export const hydrationCanBeAborted = true;
 
-// This render() hook only supports SSR, see https://vite-plugin-ssr.com/render-modes for how to modify render() to support SPA
+let root: Root;
 async function render(pageContext: PageContextClient) {
-  const { Page, pageProps } = pageContext
-  if (!Page) throw new Error('Client-side render() hook expects pageContext.Page to be defined')
-  hydrateRoot(
-    document.getElementById('page-view')!,
+  const { Page, pageProps, exports } = pageContext;
+  if (!Page) {
+    throw new Error('Client-side render() hook expects pageContext.Page to be defined');
+  }
+  const page = (
     <PageShell pageContext={pageContext}>
       <Page {...pageProps} />
     </PageShell>
-  )
+  );
+
+  const container = document.getElementById(MAIN_CONTAINER_ID)!;
+
+  if (pageContext.isHydration) {
+    root = hydrateRoot(container, page);
+  } else {
+    if (!root) {
+      root = createRoot(container);
+    }
+    root.render(page);
+  }
+
+  document.title = exports.documentProps?.title || DEFAULT_TITLE;
 }
 
-/* To enable Client-side Routing:
-export const clientRouting = true
-// !! WARNING !! Before doing so, read https://vite-plugin-ssr.com/clientRouting */
+export { render };
