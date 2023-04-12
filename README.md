@@ -18,16 +18,32 @@
     npx degit https://github.com/GoodPraxis/ts-vite-starter my-vite-site
     ```
 
-2.  **Start developing.**
+2. **Install dependencies**
 
-    Navigate into your new site’s directory and start it up.
+    Navigate into your new site’s directory and install dependencies.
 
     ```shell
     cd my-vite-site/
+    npm install
+    ```
+
+3. **Initialise git and create initial commit**
+
+      ```shell
+      git init
+      git add .
+      git commit -m "Initial commit"
+      ```
+
+4.  **Start developing.**
+
+    Start a development server inside your new site’s directory.
+
+    ```shell
     npm run develop
     ```
 
-3.  **Open the code and start customizing!**
+5.  **Open the code and start customizing!**
 
     Your site is now running at http://localhost:3000!
 
