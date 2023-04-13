@@ -6,6 +6,8 @@ module.exports = {
   extends: [
     'plugin:react/recommended',
     'airbnb',
+    'plugin:jest/recommended',
+    'plugin:testing-library/react',
   ],
   globals: {
     Atomics: 'readonly',
@@ -22,6 +24,8 @@ module.exports = {
   plugins: [
     'react',
     '@typescript-eslint',
+    'jest',
+    'testing-library',
   ],
   rules: {
     'import/extensions': 'off',
