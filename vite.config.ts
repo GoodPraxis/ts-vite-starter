@@ -4,6 +4,10 @@ import { UserConfig } from 'vite';
 
 const config: UserConfig = {
   plugins: [react(), ssr({ prerender: true })],
+  test: {
+    environment: 'jsdom',
+    setupFiles: 'test-setup.ts',
+  },
   css: {
     preprocessorOptions: {
       scss: {
