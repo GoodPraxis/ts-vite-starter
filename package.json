@@ -24,7 +24,7 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "vite": "^4.3.5",
-    "vite-plugin-ssr": "^0.4.123"
+    "vite-plugin-ssr": "^0.4.127"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
