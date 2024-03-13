@@ -23,7 +23,7 @@
     "sirv": "^2.0.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2",
-    "vite": "^5.1.5",
+    "vite": "^5.1.6",
     "vite-plugin-ssr": "^0.4.142"
   },
   "devDependencies": {
